@@ -6,24 +6,32 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client {
 
     public static void main(String... args) {
+        Scanner scanner = new Scanner(System.in);
 
+        try (Socket socket = new Socket(ServerConfig.HOST, ServerConfig.PORT);
+             PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
 
-                try (Socket socket = new Socket(ServerConfig.HOST, ServerConfig.PORT);
-                 PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
-
-                System.out.println(reader.readLine());
-
-                writer.println("Hi, i am your client");
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            String answer;
+            System.out.println(reader.readLine());
+            writer.println(scanner.nextLine());
+            answer = reader.readLine();
+            System.out.println(answer);
+            while (answer.equals("Not OK")) {
+                writer.println(scanner.nextLine());
+                answer = reader.readLine();
+                System.out.println(answer);
             }
 
-
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+
 }
